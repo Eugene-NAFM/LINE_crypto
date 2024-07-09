@@ -1,0 +1,1276 @@
+# This is a sample Python script.
+
+# Press ⌃R to execute it or replace it with your code.
+# Press Double ⇧ to search everywhere for classes, files, tool windows, actions, and settings.
+
+
+def print_hi(name):
+    # Use a breakpoint in the code line below to debug your script.
+    print(f'Hi, {name}')  # Press ⌘F8 to toggle the breakpoint.
+
+
+# Press the green button in the gutter to run the script.
+if __name__ == '__main__':
+    print_hi('PyCharm')
+
+# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+
+# Программа по ГРАНТУ
+# Программа по ГРАНТУ генерация случайных массивов
+# ===============================================================
+import random
+import time #імпортуємо ф-цію  бібліотеки time без підключення в становках
+
+print('start program')
+
+# ===============================================================
+# === Список процедур
+
+import numpy
+import numpy as np
+
+N = int(input("Ввести размер массива бетта - цифровой подписи N: "))
+
+polinom_array = numpy.zeros((N)) #задается непрводимый полином
+polinomrand_array = numpy.zeros((N)) #задается случайный полином
+
+if N == 8:
+    polinom_array = [0 for i1 in range(N + 1)]         #     непрводимый полином
+    polinom_array[0] = 1
+    polinom_array[2] = 1
+    polinom_array[3] = 1
+    polinom_array[4] = 1
+    polinom_array[8] = 1
+    print("неприводимый полином  \n",polinom_array)
+
+if N == 16:
+    polinom_array = [0 for i1 in range(N + 1)]         #     непрводимый полином
+    polinom_array[0] = 1
+    polinom_array[1] = 1
+    polinom_array[3] = 1
+    polinom_array[12] = 1
+    polinom_array[16] = 1
+
+    print("неприводимый полином  \n",polinom_array)
+if N == 12:
+    polinom_array = [0 for i1 in range(N + 1)]         #     непрводимый полином
+    polinom_array[0] = 1
+    polinom_array[1] = 1
+    polinom_array[4] = 1
+    polinom_array[6] = 1
+    polinom_array[12] = 1
+
+    print("неприводимый полином  \n",polinom_array)
+if N == 32:
+    polinom_array = [0 for i1 in range(N + 1)]         #     непрводимый полином
+    polinom_array[0] = 1
+    polinom_array[1] = 1
+    polinom_array[2] = 1
+    polinom_array[22] = 1
+    polinom_array[32] = 1
+
+    print("неприводимый полином  \n",polinom_array)
+
+
+a_array = numpy.random.randint(0, 2, size=(N, N))
+b_array = numpy.random.randint(0, 2, size=(N))
+c_array = numpy.random.randint(0, 2, size=(N))
+d_array = np.zeros(N, dtype=int)
+#w_array = np.zeros(N, dtype=int)
+
+# строим процедуру умножение двух полином по модулю неприводимого полинома
+
+def multpolin(c_array, b_array): #умножение полиномов по модулю неприводимого полинома
+
+    prom_array = numpy.zeros((N*2))  # задается рабочий регистр для вычисления умножения
+    for j in range(0, N):
+        x = c_array [j]
+        for i1 in range(0, N):
+            prom_array[i1+j] = (prom_array[i1+j] + x * b_array[i1])  #% 2
+#    print("рез полином prom_array\n", prom_array)
+    for j in range(0, N * 2):
+        prom_array[j] = prom_array[j] % 2
+#   print("рез полином prom_array 2 \n", prom_array)
+    for j in range(0, N):
+        x = prom_array[N*2-1-j]
+        for i1 in range(0, N+1):
+            i2 = N-1-j+i1
+            prom_array[i2] = (prom_array[i2] + x * polinom_array[i1])  #% 2
+    for j in range(0, N):
+        d_array[j] = prom_array[j] % 2
+
+    return d_array
+#==========================================
+inverspolinomkey_array = []
+polinomrand_array1 = []
+polinomrand_array1 = numpy.zeros((N))
+inverspolinomkey_array = numpy.zeros((N))
+polinomrand_array1 = polinomrand_array
+dirpolinrand_array = numpy.zeros((N))
+
+# print("рез полином dirpolinrand_array \n", dirpolinrand_array)
+
+def invertpolin(c_array, inverspolinomkey_array): #вычисление обратного элемента для c_array по модулю неприводимого полинома
+
+    prom_array = numpy.zeros((N))
+    for i in range(0, N):
+        inverspolinomkey_array[i] = 0
+    inverspolinomkey_array[0] = 1
+
+    for i in range(0, N - 1):
+        prom_array = numpy.zeros((N*2))  # задается рабочий регистр для вычисления умножения
+        for i1 in range(0, N):
+            prom_array[i1 * 2] = c_array[i1]
+
+        for j in range(0, N):
+            x = int(prom_array[N * 2 - 1 - j])
+            for i1 in range(0, N + 1):
+                i2 = N - 1 - j + i1
+                prom_array[i2] = (prom_array[i2] + x * polinom_array[i1])  # % 2
+        for j in range(0, N):
+            c_array[j] = int(prom_array[j] % 2)
+
+        prom_array = [0 for i in range(N * 2)]
+
+        for j in range(0, N):
+            x = inverspolinomkey_array[j]
+            for i1 in range(0, N):
+                prom_array[i1+j] = (prom_array[i1+j] + x * c_array[i1])  #% 2
+
+        for j in range(0, N * 2):
+            prom_array[j] = prom_array[j] % 2
+
+        for j in range(0, N):
+            x = prom_array[N*2-1-j]
+            for i1 in range(0, N+1):
+                i2 = N-1-j+i1
+                prom_array[i2] = (prom_array[i2] + x * polinom_array[i1])  #% 2
+        for j in range(0, N):
+            inverspolinomkey_array[j] = int(prom_array[j]) % 2
+#    print("рез полином w_array \n", w_array)
+    return #w_array
+#================================================================================
+
+dkey_array = numpy.random.randint(0, 2, size=(N, N)) #прямого ключа матрица NxN
+vkey_array = numpy.random.randint(0, 2, size=(N, N))
+#vkey_array = numpy.random.randint(0, 2, size=(N, N))
+wkey_array = numpy.random.randint(0, 2, size=(N, N))
+#vkey_array = numpy.zeros((N, N))
+dvkey_array = numpy.zeros((N, N))
+
+def genervmatr(dvkey_array, vkey_array):   #        генерируем случайную обратимую матрицу N x N для шифрование ЛП
+    key1_array = numpy.random.randint(0, 2, size=(N * 2))
+    number1 = 0
+    while number1 < 1:
+
+    # ==============генерируем случайный ключевой массив
+
+        key_array = numpy.random.randint(0, 2, size=(N, N * 2))
+        for i in range(0, N):
+            for j in range(0, N):
+                wkey_array[i, j] = key_array[i, j]
+
+        for j in range(N, N * 2):
+            for i in range(0, N):
+                key_array[i, j] = 0
+                if i == j - N:
+                    key_array[i, j] = 1
+
+    # ============== строим обратную ключевую матрицу
+        for j in range(0, N):        # ============== перебор по столбцам
+            im = -1
+            for i in range(j, N):# ============== перебор по строкам
+
+                if key_array[i, j] == 1:
+                    im = i
+                                         # === выбрал строку key_array[im, j]
+
+                    for j1 in range(0, N * 2):
+                        key1_array[j1] = key_array[im, j1]
+#                    print("рез key_array 10 \n", key1_array)
+                    for i1 in range(0, N):
+                        if key_array[i1, j] == 1:
+                            for j1 in range(0, N * 2):
+                                key_array[i1, j1] = (key_array[i1, j1] + key1_array[j1]) % 2
+                    for j1 in range(0, N * 2):
+                        key_array[im, j1] = key1_array[j1]
+
+                    if im != j:
+                        for j1 in range(0, N * 2):
+                            key_array[im, j1] = key_array[j, j1]
+                            key_array[j, j1] = key1_array[j1]
+
+            if im == -1:
+#                print('Out of loop')
+                number1 = number1 - 1
+                break
+
+        number1 = number1 + 1   #конец цикла while
+    for i in range(0, N):
+        for j in range(0, N):
+            vkey_array[i, j] = key_array[i, j + N]
+            dkey_array[i, j] = wkey_array[i, j]
+
+    return (key_array,wkey_array) #===  dkey_array - прямая матрица   vkey_array - обратная матрица
+
+# ===============================================================
+c_array = numpy.random.randint(0, 2, size=(N))
+b_array = numpy.random.randint(0, 2, size=(N))
+permbit_array = numpy.random.randint(0, 2, size=(N))  # задается случайный массив для построения перестановок
+
+def permutbit(betta_array, permbit_array): #перестановка записей в блоках массива betta_array
+    e_array = numpy.zeros((N))
+    for i in range(0, N):
+        if permbit_array[i] == 1:
+            i1 = i * 2
+            for j in range(0, N):
+                e_array[j] = betta_array[i1,j]
+                betta_array[i1,j] = betta_array[i1+1,j]
+                betta_array[i1+1,j] = e_array[j]
+
+#    print("перстановка массив betta_array 1 \n", betta_array)
+
+    return
+#==========================================
+permblock_array = numpy.zeros(N, dtype=int)  # задается случайный массив для построения перестановок
+permblockver_array = numpy.zeros(N, dtype=int)  # задается обратный массив для построения перестановок
+
+def genpermutblock(permblock_array, permblockver_array): # генерируется массив для перестановки блоков в ЛП
+    e_array = numpy.zeros(N, dtype=int)
+    c_array = numpy.random.randint(0, N, size=(N))
+#    print("cлучайный набор чисел \n", c_array)
+
+    for i in range(0, N):
+        e_array[i] = i
+
+    for j in range(0, N):
+        im = c_array[j]
+        x = e_array[im]
+        e_array[im] = e_array[j]
+        e_array[j] = x
+
+    for i in range(0, N):
+        permblock_array[i] = e_array[i]
+
+#    print("массив  permblock_array \n", permblock_array)
+
+    e_array = numpy.zeros(N, dtype=int)
+    for j in range(0, N):
+        im = permblock_array[j]
+        e_array[im] = j
+
+    for i in range(0, N):
+        permblockver_array[i] = e_array[i]
+
+#    print("массив  permblockver_array \n", permblockver_array)
+
+    return
+#===============================
+#genpermutblock()  #  проверка
+
+#===============================
+def permutblock(betta_array, permblock_array): #перестановка блоков
+    e_array = numpy.zeros((N * 2, N))
+    for i in range(0, N):
+        im = permblock_array[i] * 2
+
+        for j in range(0, N):
+            e_array[im,j] = betta_array[i*2,j]
+            e_array[im+1,j] = betta_array[i*2+1,j]
+
+    for i in range(0, N * 2):
+        for j in range(0, N):
+             betta_array[i,j] = e_array[i,j]
+
+#    print("перeстановка массив betta_array по ключу \n", betta_array)
+
+    return
+#===============================
+
+betta_array = numpy.random.randint(0, 2, size=(N*2, N))
+
+permbit_array = numpy.random.randint(0, 2, size=(N))  # задается случайный массив для построения перестановок bit
+bettarand_array = numpy.random.randint(0, 2, size=(N, N)) # === задаем массив N слов для покрытия betta_array
+bettarandhelp_array = numpy.zeros((N)) #задается нулевой массив для хранения суммы случайных строк
+dirpolinrand_array = numpy.zeros((N))
+
+
+def genbetta(betta_array, permbit_array, permblock_array, bettarand_array, dirpolinrand_array, dkey_array): #формирование ЛЦП
+    dvkey_array = numpy.random.randint(0, 2, size=(N))
+    #  простой массив ЛЦП
+
+
+#    print("Простой массив betta_array 15 -1\n", betta_array)
+
+# === перстанови в блоке betta_array
+    permutbit(betta_array, permbit_array)
+#    print(" permbit_array \n", permbit_array)
+#    print("перестановка bit в блоках  betta_array 15 0 \n", betta_array)
+
+# === перстанови блоков betta_array      permblock_array
+    permutblock(betta_array, permblock_array)  # переставляются блоки в betta_array
+
+#    print("перестановка блоков в массиве betta_array 15 0 \n", betta_array)
+
+# === Складываем массив betta_array+слов зашумления bettarand_array
+    for i in range(0, N):
+        i1 = i * 2
+        for j in range(0, N):
+            betta_array[i1,j] = (betta_array[i1,j] + bettarand_array[i,j]) % 2
+            betta_array[i1+1,j] = (betta_array[i1+1,j] + bettarand_array[i,j]) % 2
+
+#    print("Зашумленный массив betta_array 15 0 \n", betta_array)
+
+#===== Умножение ЛЦП на секретный полином dirpolinrand_array
+
+#    print("betta_array 15 1 \n", betta_array)
+
+    for i in range(0, N * 2):
+
+        for j in range(0, N):
+            c_array[j] = betta_array[i,j]
+            b_array[j] = dirpolinrand_array[j]
+        multpolin(c_array, b_array)
+        for j in range(0, N):
+            betta_array[i,j] = d_array[j]
+
+#    print("betta_array 15 2 \n", betta_array)
+
+#===== Умножение ЛЦП на секретную  матрицу dkey_array
+
+    for i in range(0, N * 2):
+        for j in range(0, N):
+            c_array[j] = betta_array[i,j]
+        dvkey_array = np.dot( c_array, dkey_array) % 2
+#        print("dvkey_array ??????????? \n", dvkey_array)
+        for j in range(0, N):
+            betta_array[i,j] = dvkey_array[j]
+
+#    print("betta_array 15 3 \n", betta_array)
+    return
+#===============================
+
+def controlbetta(betta_array, vkey_array, inverspolinomkey_array, bettarand_array, permblockver_array, permbit_array): #
+
+    for i in range(0, N * 2):
+        for j in range(0, N):
+            c_array[j] = betta_array[i,j]
+        dvkey_array = np.dot( c_array, vkey_array) % 2
+        for j in range(0, N):
+            betta_array[i,j] = dvkey_array[j]
+
+    print("betta_array 4 \n", betta_array)
+
+#===== Умножение ЛЦП на обратный секретный полином
+
+    for i in range(0, N * 2):
+
+        for j in range(0, N):
+            c_array[j] = betta_array[i,j]
+            b_array[j] = inverspolinomkey_array[j]
+        multpolin(c_array, b_array)
+        for j in range(0, N):
+            betta_array[i,j] = d_array[j]
+
+    print("betta_array 5 \n", betta_array)
+
+#===== Суммирование ЛЦП с  секретными словами
+
+# === Складываем массив betta_array+слов зашумления
+    for i in range(0, N):
+        i1 = i * 2
+        for j in range(0, N):
+            betta_array[i1,j] = (betta_array[i1,j] + bettarand_array[i,j]) % 2
+            betta_array[i1+1,j] = (betta_array[i1+1,j] + bettarand_array[i,j]) % 2
+
+    print("betta_array 6 \n", betta_array)
+
+# === переставляем блоки в betta_array
+    permutblock(betta_array, permblockver_array)
+
+    print("восстановление  массив betta_array 2 \n", betta_array)
+
+# === переставляем записи в блоках в betta_array
+    permutbit(betta_array, permbit_array)
+    print("восстановление записей в блоках массив betta_array  \n", betta_array)
+
+    return
+#============================================
+def sumrandhelp(bettarand_array, bettarandhelp_array):
+    for j in range(0, N):
+        bettarandhelp_array[j] = 0
+    for i in range(0, N):
+        for j in range(0, N):
+            bettarandhelp_array[j] = (bettarandhelp_array[j] + bettarand_array[i,j]) % 2
+    return
+#============================================
+
+k = int(input("Ввести размер k для опредения квадратной матрицы k: "))
+K = k * k
+
+U_array = numpy.random.randint(0, 2, size=(k*4, K))
+U1_array = numpy.random.randint(0, 2, size=(k*4, K))
+L = int(input("Ввести размер L для опредения квадратной матрицы L: "))
+print("k,K,L \n", k,K,L)
+#============================================
+def equation(U_array, K, k): #  Построение массива из 0 и 1 для размера 4 х 4
+    K1 = k * 4
+    for i in range(0, K1):
+        for j in range(0, K):
+            U_array[i,j] = 0
+
+    for p  in range(0, 4):
+        if p == 0:
+            for i in range(0, k):
+                for j in range(0, k):
+                    U_array[i,j*k+i] = 1 # закатали столбцы
+        if p == 1:
+            for i in range(0, k):
+                for j in range(0, k):
+                    U_array[i+k,j+i*k] = 1 # закатали строки
+        if p == 2:
+            for i in range(0, k):
+                for j in range(0, k):
+                    p1 = (k - j + i) % k
+                    p2 = p1 * k + j
+                    U_array[i+k*2,p2] = 1 # закатали дигональ
+
+        if p == 3:
+            for i in range(0, k):
+                for j in range(0, k):
+                    p1 = (k - i + j) % k
+                    p2 = k * j +  p1
+                    U_array[i+k*3,p2] = 1 # закатали дигональ
+
+
+#    print("U_array3 \n", U_array)
+    return
+#============================================
+
+U_arrayind = numpy.random.randint(0, 2, size=(k*4))
+U_arrayLS = numpy.random.randint(0, 2, size=(K))
+U_arrayNLS = numpy.random.randint(0, 2, size=(K))
+con_array = numpy.random.randint(0, 2, size=(2))
+# ===============================================================
+def eqsolution(U_array, K, k, U_arrayind, U_arrayLS, U_arrayNLS, con_array): # решение системы уравнений
+                                                                             # относительно U_arrayind, U_arrayLS, U_arrayNLS, con_array
+                                                                             # в U_array будет приведенная матрица
+    key1_array = numpy.zeros(K, dtype=int)
+    K1 = k * 4
+    const = 0
+    const1 = 0
+    for i in range(0, K1):
+        U_arrayind[i] = i
+    for i in range(0, K):
+        U_arrayLS[i] = 0
+        U_arrayNLS[i] = 0
+
+#    print("U_array_ind \n", U_arrayind)
+# ============== строим обратную ключевую матрицу
+    for j in range(0, K):        # ============== перебор по столбцам
+        im = -1
+#        print("const 1 =", const)
+        for i in range(j - const, K1):# ============== перебор по строкам
+            if U_array[i, j] == 1:
+                im = i
+                                         # === выбрал строку U_array[im, j]
+                for j1 in range(0, K):
+                    key1_array[j1] = U_array[im, j1]
+#                print("рез key1_array \n", key1_array)
+                for i1 in range(0, K1):
+                    if U_array[i1, j] == 1:
+                        for j1 in range(0, K):
+                            U_array[i1, j1] = (U_array[i1, j1] + key1_array[j1]) % 2
+                for j1 in range(0, K):
+                    U_array[im, j1] = key1_array[j1]
+
+                if im != j- const:
+                    for j1 in range(0, K):
+                        U_array[im, j1] = U_array[j- const, j1]
+                        U_array[j- const, j1] = key1_array[j1]
+
+                    im1 = U_arrayind[im]
+                    U_arrayind[im] = U_arrayind[j- const]
+                    U_arrayind[j- const] = im1
+
+        if im != -1:
+            U_arrayLS[const1] = j
+            const1 = const1 + 1
+
+        if im == -1:
+            U_arrayNLS[const] = j
+            const = const + 1
+
+#        print("const 2 = ", const)
+
+#        print("U_array \n", U_arrayNLS)
+#        print("U_array \n", U_array)
+#        print("U_array_ind \n", U_arrayind)
+    con_array[0] = const1
+    con_array[1] = const
+
+    return
+
+# ===============================================================
+key_array = numpy.random.randint(0, 2, size=(L, L * 2))
+# ===============================================================
+def genequation(U_array, K, L, k, U_arrayind, U_arrayLS, U_arrayNLS, con_array, key_array): # формируем систему уравнений 8 х 8 и обратную матрицу
+    key1_array = numpy.random.randint(0, 2, size=(K))
+    key2_array = numpy.random.randint(0, 2, size=(K))
+
+
+    K1 = k * 4
+    const1 = con_array[0]
+    const = con_array[1]
+#    print("const1 \n", const1)
+#    print("const \n", const)
+#    print("const + const1 - L \n", const + const1 - L)
+    key2_array = numpy.zeros(const + const1 - L, dtype=int)
+#    print("U_arrayind \n", U_arrayind)
+
+# ============== изменим списки U_arrayLS, U_arrayNLS где показаны переменные для ЛП и НЛП
+    for j in range(L, const1):
+        key2_array[j-L] = U_arrayLS[j]
+    for j in range(0, const):
+        key2_array[j+const1 - L] = U_arrayNLS[j]
+
+#    print("key2_array \n", key2_array)
+    key2_array.sort()                                   # сортировка записей в массиве
+#    print("key2_array.sort \n", key2_array)
+
+    for j in range(0, const + const1 - L):
+        U_arrayNLS[j] = key2_array[j-L]
+    con_array[0] = L
+    con_array[1] = const + const1 - L
+# =========================================
+#    print("U_array_ind \n", U_arrayind)
+    for j in range(L, L * 2):
+            for i in range(0, L):
+                key_array[i, j] = 0
+                if i == j - L:
+                    key_array[i, j] = 1
+#    print("key_array11 \n", key_array)
+# =========================================выбираем уравнения из U_array
+    for i in range(0, L):
+        im = U_arrayind[i]
+        for j in range(0, K):
+            key1_array[j] = U_array[im, j]###################
+#        print("key_array1 \n", key1_array)
+        for j in range(0, L):
+            im1 = U_arrayLS[j]
+            key_array[i, j] = key1_array[im1]  #===собрали непиведенные уравнения из U_array общего списка
+#    print("key_array непpиведенные уравнения \n", key_array)
+
+    return
+
+# ===============================================================
+
+# ===============================================================
+T_array = numpy.random.randint(0, 2, size=(K, N, N))
+T_arrayhelp = numpy.random.randint(0, 2, size=(N, N))
+Tau_array = numpy.random.randint(0, 2, size=(K, N, N))
+Ac_array = numpy.random.randint(0, 2, size=(K, N*2, N))
+# ===============================================================
+def genTTauAc(T_array, Tau_array, Ac_array, K, N): # формируем массивы T_array, Tau_array,Ac_array
+#    key1_array = numpy.random.randint(0, 2, size=(N))
+    for k in range(0, K):
+        for i in range(0, N):
+            key1_array = numpy.random.randint(0, 2, size=(N))
+ #            key1_array = numpy.zeros(N, dtype=int)  # убрать после восстановления
+            for j in range(0, N):
+                T_array[k, i, j] = key1_array[j]
+    for k in range(0, K):
+        for i in range(0, N):
+            key1_array = numpy.random.randint(0, 2, size=(N))
+#            key1_array = numpy.zeros(N, dtype=int)  # убрать после восстановления
+            for j in range(0, N):
+                Tau_array[k, i, j] = key1_array[j]
+    for k in range(0, K):
+        for i in range(0, N*2):
+            key1_array = numpy.random.randint(0, 2, size=(N))
+#            key1_array = numpy.zeros(N, dtype=int)  # убрать после восстановления
+            for j in range(0, N):
+                Ac_array[k, i, j] = key1_array[j]
+
+    return
+# ===============================================================
+
+# ===============================================================
+
+Wkci_array = numpy.random.randint(0, 2, size=(N, N)) # массив с секретным матричным преобразованием для гамма и лямбда
+Gamma_array = numpy.random.randint(0, 2, size=(K, N*2, N))
+Lamda_array = numpy.random.randint(0, 2, size=(K, N*2, N))
+bettaLS_array = numpy.random.randint(0, 2, size=(K, N*2, N))
+
+
+# ===============================================================
+def gengammalamda(bettaLS_array,Gamma_array,Lamda_array,T_array,Tau_array,Ac_array,Wkci_array,K,N,U_arrayind, U_arrayLS, U_arrayNLS, con_array): # формируем массивы T_array, Tau_array,Ac_array
+#    key1_array = numpy.random.randint(0, 2, size=(N))
+    key1_array = numpy.random.randint(0, 2, size=(N))
+    key2_array = numpy.random.randint(0, 2, size=(N))
+    L1 = con_array[0]
+    L2 = con_array[1]
+
+    for k in range(0, L1):
+        km = U_arrayLS[k]
+        for i in range(0, N):
+            for j1 in range(0, N):
+                key1_array[j1] = Ac_array[km, i*2, j1]
+                key2_array[j1] = Ac_array[km, i*2+1, j1]
+            key1_array = np.dot( key1_array, Wkci_array) % 2
+            key2_array = np.dot( key2_array, Wkci_array) % 2
+            for j in range(0, N):
+                Gamma_array[km, i*2, j] = (bettaLS_array[km, i*2, j] + T_array[km, i, j] + key1_array[j]) % 2
+                Gamma_array[km, i*2+1, j] = (bettaLS_array[km, i*2+1, j] + T_array[km, i, j] + key2_array[j]) % 2
+                Lamda_array[km, i*2, j] = (Ac_array[km, i*2, j] + Tau_array[km, i, j]) % 2
+                Lamda_array[km, i*2+1, j] = (Ac_array[km, i*2+1, j] + Tau_array[km, i, j]) % 2
+
+    for k in range(0, L2):
+        km = U_arrayNLS[k]
+        for i in range(0, N):
+            for j1 in range(0, N):
+                key1_array[j1] = bettaLS_array[km, i*2, j1]
+                key2_array[j1] = bettaLS_array[km, i*2+1, j1]
+            key1_array = np.dot( key1_array, Wkci_array) % 2
+            key2_array = np.dot( key2_array, Wkci_array) % 2
+            for j in range(0, N):
+                Gamma_array[km, i*2, j] =  (T_array[km, i, j] + key1_array[j]) % 2
+                Gamma_array[km, i*2+1, j] = (T_array[km, i, j] + key2_array[j]) % 2
+                Lamda_array[km, i*2, j] = (bettaLS_array[km, i*2, j] + Tau_array[km, i, j]) % 2
+                Lamda_array[km, i*2+1, j] = (bettaLS_array[km, i*2+1, j] + Tau_array[km, i, j]) % 2
+
+    return
+
+# ===============================================================
+#========================вычисляем по системе уравнений U2T_array, V2Tau_array
+
+T_arrayU = numpy.random.randint(0, 2, size=(L,N))
+Tau_arrayV = numpy.random.randint(0, 2, size=(L,N))
+Tau_arrayVW = numpy.random.randint(0, 2, size=(L,N))
+T_arrayhelpLS = numpy.random.randint(0, 2, size=(K, N))
+Tau_arrayhelpLS = numpy.random.randint(0, 2, size=(K, N))
+
+def encrypttau(T_arrayhelpLS, Tau_arrayhelpLS, K, L, N, U1_array, U_arrayind, T_arrayU, Tau_arrayV, Tau_arrayVW, Wkci_array): #
+    key1_array = numpy.random.randint(0, 2, size=(N))
+    key2_array = numpy.random.randint(0, 2, size=(N))
+    key3_array = numpy.random.randint(0, 2, size=(N))
+    key4_array = numpy.random.randint(0, 2, size=(K))
+    key5_array = numpy.random.randint(0, 2, size=(K))
+
+#===================================================вычисляем по системе уравнений U и V
+    for k in range(0, L):
+        key2_array = numpy.zeros(N, dtype=int)
+        key3_array = numpy.zeros(N, dtype=int)
+        km = U_arrayind[k]
+#        print("km = U_arrayind \n", km)
+
+        for i in range(0, K):
+            key4_array[i] = U1_array[km, i]
+
+#        print("key4_array \n", key4_array)
+        for i in range(0, K):
+#            print("key4_array 55 \n", key4_array[i])
+            if key4_array[i] == 1:
+#                print("key4_array 66 \n", key4_array[i])
+                for j in range(0, N):
+                    key2_array[j] = (key2_array[j] + T_arrayhelpLS[i, j]) % 2
+                    key3_array[j] = (key3_array[j] + Tau_arrayhelpLS[i, j]) % 2
+
+#        print("key2_array \n", key2_array)
+        for j in range(0, N): ##########################
+            T_arrayU[k, j] = key2_array[j]
+            Tau_arrayV[k, j] = key3_array[j]
+#    print("T_arrayU \n", T_arrayU)
+#    print("Tau_arrayV \n", Tau_arrayV)
+
+    for k in range(0, L):
+        for j in range(0, N):
+            key1_array[j] = Tau_arrayV[k, j]
+        key1_array = np.dot( key1_array, Wkci_array) % 2
+        for j in range(0, N): ##############################
+            Tau_arrayVW[k, j] = key1_array[j]
+#    print("Tau_arrayVW x Wkci_array\n", Tau_arrayVW)
+
+    return
+
+# ===============================================================
+# ============================================зашифрование
+# ============================================задаем входной текст
+
+
+U2_array = numpy.random.randint(0, 2, size=(L,N))
+V2_array = numpy.random.randint(0, 2, size=(L,N))
+#B2_array = numpy.random.randint(0, 2, size=(L,N))
+bettaLSres_array = numpy.random.randint(0, 2, size=(K,N))
+
+def encryption(Gamma_array, Lamda_array,Text_array, bettaLS_array, bettaLSres_array,K, L, N, U1_array, U_arrayind, U2_array, V2_array): #
+    Gammarezalt_array = numpy.random.randint(0, 2, size=(K,N))
+    Lamdarezalt_array = numpy.random.randint(0, 2, size=(K,N))
+    key1_array = numpy.random.randint(0, 2, size=(N))
+    key2_array = numpy.random.randint(0, 2, size=(N))
+    key3_array = numpy.random.randint(0, 2, size=(N))
+    key4_array = numpy.random.randint(0, 2, size=(K))
+    key5_array = numpy.random.randint(0, 2, size=(K))
+
+#    Gammarezalt_array = numpy.random.randint(0, 2, size=(K,N))
+#    Lamdarezalt_array = numpy.random.randint(0, 2, size=(K,N))
+
+    for k in range(0, K):
+        key3_array = numpy.zeros(N, dtype=int)
+        for j in range(0, N):
+            key1_array[j] = Text_array[k, j]
+
+        for i in range(0, N):
+            if key1_array[i] == 0:
+                for j in range(0, N):
+                    key2_array[j] = Gamma_array[k, i*2, j]
+            if key1_array[i] == 1:
+                for j in range(0, N):
+                    key2_array[j] = Gamma_array[k, i*2+1, j]
+
+            for j in range(0, N):
+                key3_array[j] = (key3_array[j] + key2_array[j]) % 2
+
+        for j in range(0, N):
+            Gammarezalt_array[k, j] = key3_array[j]
+#===========================================
+    for k in range(0, K):
+        key3_array = numpy.zeros(N, dtype=int)
+        for j in range(0, N):
+            key1_array[j] = Text_array[k, j]
+
+        for i in range(0, N):
+            if key1_array[i] == 0:
+                for j in range(0, N):
+                    key2_array[j] = Lamda_array[k, i*2, j]
+            if key1_array[i] == 1:
+                for j in range(0, N):
+                    key2_array[j] = Lamda_array[k, i*2+1, j]
+
+            for j in range(0, N):
+                key3_array[j] = (key3_array[j] + key2_array[j]) % 2
+
+        for j in range(0, N):
+            Lamdarezalt_array[k, j] = key3_array[j]
+
+
+#    print("Gammarezalt_array \n", Gammarezalt_array)
+#    print("Lamdarezalt_array \n", Lamdarezalt_array)
+#===========================================
+    for k in range(0, K):
+        key3_array = numpy.zeros(N, dtype=int)
+        for j in range(0, N):
+            key1_array[j] = Text_array[k, j]
+
+        for i in range(0, N):
+            if key1_array[i] == 0:
+                for j in range(0, N):
+                    key2_array[j] = bettaLS_array[k, i*2, j]
+            if key1_array[i] == 1:
+                for j in range(0, N):
+                    key2_array[j] = bettaLS_array[k, i*2+1, j]
+
+            for j in range(0, N):
+                key3_array[j] = (key3_array[j] + key2_array[j]) % 2
+
+        for j in range(0, N):
+            bettaLSres_array[k, j] = key3_array[j]
+#    print("bettaLSres_array \n", bettaLSres_array)
+#===================================================вычисляем по системе уравнений U и V
+    print("список уравнений для вычисления L слов шифр текста ")
+    for k in range(0, L):
+        key2_array = numpy.zeros(N, dtype=int)
+        key3_array = numpy.zeros(N, dtype=int)
+#        key1_array = numpy.zeros(N, dtype=int)
+        km = U_arrayind[k]
+#        print("km = U_arrayind \n", km)
+
+        for i in range(0, K):
+            key4_array[i] = U1_array[km, i]
+        print(key4_array)
+#        print("key4_array \n", key4_array)
+        for i in range(0, K):
+#            print("key4_array 55 \n", key4_array[i])
+            if key4_array[i] == 1:
+#                print("key4_array 66 \n", key4_array[i])
+                for j in range(0, N):
+                    key2_array[j] = (key2_array[j] + Gammarezalt_array[i, j]) % 2
+                    key3_array[j] = (key3_array[j] + Lamdarezalt_array[i, j]) % 2
+#                    key1_array[j] = (key1_array[j] + bettaLSres_array[i, j]) % 2
+#        print("key2_array \n", key2_array)
+        for j in range(0, N):
+            U2_array[k, j] = key2_array[j]
+            V2_array[k, j] = key3_array[j]
+#            B2_array[k, j] = key1_array[j]
+#    print("U2_array \n", U2_array)
+#    print("V2_array \n", V2_array)
+#    print("B2_array \n", B2_array)
+
+    return
+
+# ==============================================================
+D_array = numpy.random.randint(0, 2, size=(L, N))
+D_arrayV = numpy.random.randint(0, 2, size=(L, N))
+
+def decryption(U2_array, V2_array, D_array, K, L, N, T_arrayU, Tau_arrayVW, Wkci_array, key_array): #
+    key1_array = numpy.random.randint(0, 2, size=(N))
+    key2_array = numpy.random.randint(0, 2, size=(N))
+    key3_array = numpy.random.randint(0, 2, size=(L*2))
+    key4_array = numpy.random.randint(0, 2, size=(K))
+    key5_array = numpy.random.randint(0, 2, size=(K))
+    vkey_array = numpy.random.randint(0, 2, size=(L, L*2))
+
+#===================================================вычисляем по системе уравнений U и V
+    for k in range(0, L):
+        key2_array = numpy.zeros(N, dtype=int)
+#        print("key2_array проверка на нуль \n", key2_array)
+        for j in range(0, N):
+            key1_array[j] = V2_array[k, j]
+#        print("key1_array проверка на значение А \n", key1_array)
+        key1_array = np.dot( key1_array, Wkci_array) % 2
+#        print("key1_array проверка на на умножение Wkci \n", key1_array)
+
+        for j in range(0, N):
+            key2_array[j] = (key2_array[j] + key1_array[j] + U2_array[k, j] + T_arrayU[k,j] + Tau_arrayVW[k,j]) % 2
+
+        for j in range(0, N):
+            D_array[k, j] = key2_array[j]
+
+#    print("D_array результат гамма плюс лямда \n", D_array)
+
+
+# ============== строим обратную ключевую матрицу
+    for j in range(0, L):        # ============== перебор по столбцам
+
+        for i in range(j, L):# ============== перебор по строкам
+
+            if key_array[i, j] == 1:
+                im = i
+                                         # === выбрал строку key_array[im, j]
+
+                for j1 in range(0, L * 2):
+                    key3_array[j1] = key_array[im, j1]
+                for j1 in range(0, N):
+                    key2_array[j1] = D_array[im, j1]
+
+#                    print("рез key_array 10 \n", key1_array)
+                for i1 in range(0, L):
+                    if key_array[i1, j] == 1:
+                        for j1 in range(0, L * 2):
+                            key_array[i1, j1] = (key_array[i1, j1] + key3_array[j1]) % 2
+                        for j1 in range(0, N):
+                            D_array[i1, j1] = (D_array[i1, j1]+ key2_array[j1]) % 2
+
+                for j1 in range(0, L * 2):
+                    key_array[im, j1] = key3_array[j1]
+                for j1 in range(0, N):
+                    D_array[im, j1] =  key2_array[j1]
+
+
+
+#                if im != j: #зачем здесь это я не знаю'
+#                    for j1 in range(0, L * 2):
+#                        key_array[im, j1] = key_array[j, j1]
+#                        key_array[j, j1] = key3_array[j1] #=====
+
+
+
+
+    for i in range(0, L):
+        for j in range(0, L):
+            vkey_array[i, j] = key_array[i, j + L]
+#            dkey_array[i, j] = wkey_array[i, j]
+
+#    print("vkey_array матрица как результат правильнссти завершения приведения системы уравнений \n", vkey_array)
+#    print("dkey_array результирующие значения \n", D_array)
+
+    return
+#=========================================
+Text1_array = numpy.random.randint(0, 2, size=(L,N))
+# ===============================================================
+def decryptbetta(K,L,N, D_array,bettaLSprim_array,permbitLS_array,permblockLS_array,bettarandhelpLS_array,inverspolinomkeyLS_array,vkeyLS_array,U_arrayLS,Text1_array): #
+    key1_array = numpy.random.randint(0, 2, size=(N))
+    key2_array = numpy.random.randint(0, 2, size=(N))
+    key3_array = numpy.random.randint(0, 2, size=(N))
+    key4_array = numpy.random.randint(0, 2, size=(K))
+    key5_array = numpy.random.randint(0, 2, size=(N,N))
+    key6_array = numpy.random.randint(0, 2, size=(N*2,N))
+#===================================================вычисляем по системе уравнений U и V
+
+    for k in range(0, L):
+#        print("decryptbetta \n", k)
+        key2_array = numpy.zeros(N, dtype=int)
+        km = U_arrayLS [k]
+
+        for j in range(0, N):
+            key1_array[j] = D_array[k, j]
+#        print("здесь должно совпадать с бетта значением D_arrayV[km, j] \n", key1_array)
+        for i in range(0, N):
+            for j in range(0, N):
+                key5_array[i,j] = vkeyLS_array[km,i, j]
+#        print("vkeyLS_array[km,i, j] \n", key5_array)
+        key1_array = np.dot( key1_array, key5_array) % 2 # умножение на обратную секретную матрицу для ЛП
+#        print("key1_array 1 \n", key1_array)
+
+        for j in range(0, N):
+            key2_array[j] = inverspolinomkeyLS_array[km, j] # умножение на полином
+#        print("key2_array 2 \n", key2_array)
+
+        for j in range(0, N):
+            c_array[j] = key1_array[j]
+            b_array[j] = key2_array[j]
+#        print("c_array 3 \n", c_array)
+#        print("b_array 3 \n", b_array)
+        multpolin(c_array, b_array)
+
+
+        for j in range(0, N):
+            key1_array[j] = d_array[j]   # умножение на полином и получит бетта после умнож на обратный полином
+#        print("key1_array 3 \n", key1_array)
+#        print("kbettarandhelpLS_array среднее значение шума в бетта \n", bettarandhelpLS_array)
+        for j in range(0, N):
+            key2_array[j] = bettarandhelpLS_array [km, j]
+#        print("key2_array 4 \n", key2_array)
+
+        for j in range(0, N):
+            key1_array[j] = (key1_array[j] + key2_array[j]) % 2
+#        print("key1_array 5 слово для декодирования \n", key1_array) # сложение с шумовым значением и получим слово для расшифрование
+
+#  рашифровываем слово бетта
+#        km = U_arrayLS [k] #это убрать так как это уже определено km определяет номер бетта прайм
+        for i in range(0, N*2):
+            for j in range(0, N):
+                key6_array[i,j] = bettaLSprim_array[km,i, j] # считана простая бетта подпись
+#        print("bettaLSprim_array \n", key6_array) #
+
+        for j in range(0, N):
+            j1 = N - j - 1
+            j2 = key1_array[j1]
+            if j2 == 1:
+                Text1_array[k, j1] = 1
+                for i in range(0, N):
+                    key1_array[i] = (key1_array[i] + key6_array[j1*2 + 1, i]) % 2
+            if j2 == 0:
+                Text1_array[k, j1] = 0
+                for i in range(0, N):
+                    key1_array[i] = (key1_array[i] + key6_array[j1*2, i]) % 2
+
+#        print("Text1_array 1 \n", Text1_array)
+        for j in range(0, N):
+            Text1_array[k, j] = (Text1_array[k, j] + permbitLS_array[km, j]) % 2
+#        print("permbitLS_array перстановками бит \n", permbitLS_array)
+#        print("Text1_array 2 перстановками бит \n", Text1_array)
+        for j in range(0, N):
+            j1 = permblockLS_array[km, j]
+            key2_array[j1] = Text1_array[k, j]
+#        print("ermblockLS_array перстановками блоков \n", permblockLS_array)
+#        print("Text1_array 3  перстановка блоков \n", key2_array)
+
+        for j in range(0, N):
+            Text1_array[k, j] = key2_array[j]
+
+
+    print("Text1 \n", Text1_array)
+
+
+    return
+
+#============================================================
+print("ТЕСТИРОВАНИЕ \n")
+# ==формирование betta_array
+bettaLS_array = numpy.random.randint(0, 2, size=(K,N*2,N))
+bettaLSprim_array = numpy.random.randint(0, 2, size=(K,N*2,N))
+
+for k1 in range(0, K): # это обязательный програмный блок для вывода массивов betta_array
+    betta_array = numpy.random.randint(0, 2, size=(N*2,N))
+    for i in range(0, N):
+        i1 = i * 2
+        betta_array[i1, i] = 0
+        betta_array[i1+1, i] = 1
+
+        for j in range(i+1, N):
+            betta_array[i1,j] = 0
+            betta_array[i1+1,j] = 0
+    print("Простой массив bettaLSprim_array", k1, " \n", betta_array)
+    for i in range(0, N*2):
+        for j in range(0, N):
+            bettaLSprim_array[k1,i, j] = betta_array[i, j]
+            bettaLS_array[k1,i, j] = betta_array[i, j]
+
+permbitLS_array = numpy.random.randint(0, 2, size=(K,N)) # задается случайный массив для построения перестановок bit
+print("перестановки бит в массивах ЛП permbitLS_array ", k1, " \n", permbitLS_array)
+
+permblockLS_array = numpy.random.randint(0, 2, size=(K,N))
+permblockverLS_array = numpy.random.randint(0, 2, size=(K,N))
+
+for i1 in range(0, K):
+    genpermutblock(permblock_array, permblockver_array)  # задается ключ перестановки блоков permblock_array
+    for i in range(0, N):
+        permblockLS_array[i1,i] = permblock_array[i]
+        permblockverLS_array[i1,i] = permblockver_array[i]
+
+print("перстановки блоков в ЛП permblockLS_array  \n", permblockLS_array)
+print("обратные перстановки блоков в ЛП permblockverLS_array  \n", permblockverLS_array)
+
+bettarandLS_array = numpy.random.randint(0, 2, size=(K, N, N)) # === задаем массив N слов для покрытия betta_array
+bettarand_array = numpy.random.randint(0, 2, size=(N, N))
+bettarandhelpLS_array = numpy.random.randint(0, 2, size=(K, N))
+bettarandhelp_array = numpy.zeros((N))
+
+for i1 in range(0, K):
+    for i in range(0, N):
+        for j in range(0, N):
+            bettarand_array[i, j] = bettarandLS_array[i1,i, j]
+
+    print("шумовые массивы ЛП bettarandLS_array ", i1, "\n", bettarand_array)
+
+# === Вспомогаттельное действие Складываем слова зашумления для выполнения расшифрования
+
+
+for i1 in range(0, K):
+    bettarandhelp_array = numpy.zeros((N)) #задается нулевой массив для хранения суммы случайных строк
+    for i in range(0, N):
+        for j in range(0, N):
+            bettarand_array[i, j] = bettarandLS_array[i1,i, j]
+    sumrandhelp(bettarand_array, bettarandhelp_array)
+    for i in range(0, N):
+        bettarandhelpLS_array[i1,i] = bettarandhelp_array[i]
+
+print("суммы шумовых массивов ЛП bettarandhelpLS_array[i1,i] \n", bettarandhelpLS_array)
+
+dirpolinrandLS_array = numpy.random.randint(0, 2, size=(K, N))
+dirpolin = numpy.random.randint(0, N, size=(K))
+inverspolinomkeyLS_array = numpy.random.randint(0, 2, size=(K, N))
+dirpolinrand_array = numpy.zeros((N))
+
+for i in range(0, K):
+    j = dirpolin[i]
+    dirpolinrandLS_array[i, j] = 1 # вставка единиц что не было нулей
+
+for i in range(0, K):
+    for j in range(0, N):
+        dirpolinrand_array[j] = dirpolinrandLS_array[i, j]
+    invertpolin(dirpolinrand_array,inverspolinomkey_array)
+    for j in range(0, N):
+        inverspolinomkeyLS_array[i, j] = inverspolinomkey_array[j]
+
+print("случайные полиномы для ЛП dirpolinrandLS_array[i, j] \n", dirpolinrandLS_array)
+print("обратьные случайные полиномы для ЛП inverspolinomkeyLS_array[i, j] \n", inverspolinomkeyLS_array)
+
+dkeyLS_array = numpy.random.randint(0, 2, size=(K, N, N)) #прямого ключа матрица NxN
+vkeyLS_array = numpy.random.randint(0, 2, size=(K, N, N))
+for i1 in range(0, K):
+    genervmatr(dkey_array, vkey_array) # генерация прямой dkey_array и обратной матриц vkey_array N x N
+    for i in range(0, N):
+        for j in range(0, N):
+            dkeyLS_array[i1, i, j] = dkey_array[i, j]
+            vkeyLS_array[i1, i, j] = vkey_array[i, j]
+
+    print("секретная матрица для ЛП dkeyLS_array ", i1, " \n", dkey_array)
+    print("обратная секретная матрица для ЛП vkeyLS_array ", i1, " \n", vkey_array)
+
+#dvkey_array = np.dot( dkey_array, vkey_array) % 2
+#print("произведение массивов (проверка)\n", dvkey_array)
+
+
+# === Строим массив бетта
+for i1 in range(0, K): # ++++++++++++ K поменять
+    for i in range(0, N*2):
+        for j in range(0, N):
+            betta_array[i, j] = bettaLS_array[i1, i, j]
+
+    for i in range(0, N):
+        for j in range(0, N):
+            bettarand_array[i, j] = bettarandLS_array[i1, i, j]
+            dkey_array[i, j] = dkeyLS_array[i1, i, j]
+
+#    print(" betta_array dkey_array \n", dkey_array)
+    for i in range(0, N):
+        permbit_array[i] = permbitLS_array[i1, i]
+        permblock_array[i] = permblockLS_array[i1, i]
+        dirpolinrand_array[i] = dirpolinrandLS_array[i1, i]
+
+
+    genbetta(betta_array, permbit_array, permblock_array, bettarand_array, dirpolinrand_array, dkey_array)
+
+    for i in range(0, N*2):
+        for j in range(0, N):
+            bettaLS_array[i1, i, j] = betta_array[i, j]
+    print("логарифмические подписи bettaLS_array[i1, i, j] ", i1, " \n", betta_array)
+
+# === контроль последнего массив бетта
+#print("controlbetta betta_array онтроль последнего массив бетта \n", betta_array)
+#print("controlbetta dkey_array  \n", dkey_array)
+
+#controlbetta(betta_array, vkey_array, inverspolinomkey_array, bettarand_array, permblockver_array, permbit_array)
+
+
+
+# ==формирование системы уравнений 16 х 16
+equation(U_array, K, k)
+
+K1 = k * 4
+for j in range(0, K):
+    for i in range(0, K1):
+        U1_array[i, j] = U_array[i, j]
+
+print("полная система уравнений U1_array \n", U1_array)
+
+# ========================================решаем с приведением 16 х 16 систему уравнений
+eqsolution(U_array, K, k, U_arrayind, U_arrayLS, U_arrayNLS, con_array) #=вычисляем U_arrayind, U_arrayLS, U_arrayNLS,
+
+print("система уравнений приведенная и отранжированная U_array1  \n", U_array)
+print("параметр L   \n", con_array[0])
+print("параметр K-L  \n", con_array[1])
+print("список параметров факторизуемых ЛП U_arrayLS \n", U_arrayLS)
+print("список параметров не факторизуемых ЛП U_arrayNLS \n", U_arrayNLS)
+print("список выбраных уравнений из полного списка U_array_ind \n", U_arrayind)
+
+print("полная система уравнений U_array4 \n", U1_array)
+for j in range(0, K):
+    for i in range(0, K1):
+        U_array[i, j] = U1_array[i, j]
+
+# ============= формируем систему уравнений 8 х 8
+#U_array = U1_array
+#print("U_array5 \n", U1_array)
+#print("U_array2 \n", U_array)
+genequation(U_array, K, L, k, U_arrayind, U_arrayLS, U_arrayNLS, con_array, key_array) #=вычисляем vkey_array - обратную матрицу
+
+#print("обратная матрица vkey_array \n", vkey_array)
+
+#for i in range(0, L):
+#    for j in range(0, L):
+#        vkeyeq_array[i, j] = vkey_array[ i, j]
+#print("обратная матрица vkeyeq_array \n", vkeyeq_array)
+
+# ==================================генрируем массивы T_array, Tau_array, Ac_array
+genTTauAc(T_array, Tau_array, Ac_array, K, N)
+
+
+T_arrayhelpLS = numpy.random.randint(0, 2, size=(K, N))
+Tau_arrayhelpLS = numpy.random.randint(0, 2, size=(K, N))
+
+
+
+for i1 in range(0, K): # это обязательный програмный блок для вывода массивов T_array, Tau_array, Ac_array
+    for i in range(0, N):
+        for j in range(0, N):
+            T_arrayhelp[i, j] = T_array[i1, i, j]
+    print("T_array ", i1, " \n", T_arrayhelp)
+
+    sumrandhelp(T_arrayhelp, bettarandhelp_array)
+    for i in range(0, N):
+        T_arrayhelpLS[i1,i] = bettarandhelp_array[i]
+print("Сумма T по массивам T_array - T_arrayhelpLS_array  \n", T_arrayhelpLS)
+
+for i1 in range(0, K):
+    for i in range(0, N):
+        for j in range(0, N):
+            T_arrayhelp[i, j] = Tau_array[i1, i, j]
+    print("Tau_array ", i1, " \n", T_arrayhelp)
+
+    sumrandhelp(T_arrayhelp, bettarandhelp_array)
+    for i in range(0, N):
+        Tau_arrayhelpLS[i1,i] = bettarandhelp_array[i]
+print("Сумма Tau по массивам Tau_array - Tau_arrayhelpLS_array  \n", Tau_arrayhelpLS)
+
+
+for i1 in range(0, K):
+    for i in range(0, N*2):
+        for j in range(0, N):
+            betta_array[i, j] = Ac_array[i1, i, j]
+    print("Ac_array ", i1, " \n", betta_array)
+# ===============================================================
+# ==================================генрируем секретное матричное преобразование Wkci_array
+for i in range(0, N):
+    for j in range(0, N):
+        Wkci_array[i, j] = 0
+#print("Wkci_array 1 \n", Wkci_array)
+
+genervmatr(dvkey_array, vkey_array) #генрируем секретное матричное преобразование
+
+for i in range(0, N):
+    for j in range(0, N):
+        Wkci_array[i, j] = dkey_array[i, j]
+print("секретное матричное преобразование Wkci_array 2 \n", Wkci_array)
+
+# ==============вычисляем суммы по T_array, Tau_array и Tau_arrayV х Wkci_array
+#print("уравнение  перед encryp t tau U1_array \n", U1_array)
+encrypttau(T_arrayhelpLS, Tau_arrayhelpLS, K, L, N, U1_array, U_arrayind, T_arrayU, Tau_arrayV, Tau_arrayVW, Wkci_array)
+
+
+
+# ===================================генрируем массивы bettaLS_array
+for i1 in range(0, K):
+    for i in range(0, N*2):
+        for j in range(0, N):
+            betta_array[i, j] = bettaLS_array[i1, i, j]
+#    print("bettaLS_array ", i1, " \n", betta_array)
+
+# =======================================gengammalamda
+gengammalamda(bettaLS_array,Gamma_array,Lamda_array,T_array,Tau_array,Ac_array,Wkci_array,K,N,U_arrayind, U_arrayLS, U_arrayNLS, con_array)
+for i1 in range(0, K):                             #########+++++++++++++++++
+    for i in range(0, N*2):
+        for j in range(0, N):
+            betta_array[i, j] = bettaLS_array[i1, i, j]
+#    print("вытаскиваем bettaLS_array ", i1, " \n", betta_array)
+
+for i1 in range(0, K):                             #########+++++++++++++++++
+    for i in range(0, N*2):
+        for j in range(0, N):
+            betta_array[i, j] = Gamma_array[i1, i, j]
+    print(" строим Gamma_array ", i1, " \n", betta_array)
+
+for i1 in range(0, K):
+    for i in range(0, N*2):
+        for j in range(0, N):
+            betta_array[i, j] = Lamda_array[i1, i, j]
+    print("строим Lamda_array ", i1, " \n", betta_array)
+
+# ============================================ входной текст
+
+
+# ============================================зашифрование
+print("старт зашифрования")
+Text_array  = numpy.random.randint(0, 2, size=(K,N))          #        входной текст
+print("Text_array \n", Text_array)
+
+start = time.time() #змінній start присвоювається значення часу
+encryption(Gamma_array, Lamda_array,Text_array, bettaLS_array, bettaLSres_array,K, L, N, U1_array, U_arrayind, U2_array, V2_array)
+end = time.time()
+print('время на затраты зашифрования: ', end-start)
+#        шифр текст
+
+#print("Система уравнений U1_array \n", U1_array)
+
+
+print("Первый вектор  зашифрованного массива L слов по N бит U2_array \n", U2_array)
+print("Второй вектор  зашифрованного массива L слов по N бит V2_array \n", V2_array)
+
+#+++++++++++++++++++++++++++++++encryption finish
+
+#+++++++++++++++++++++++++++++++dencryption
+
+#print("vkeyeq_array перед расшифрованием  \n", vkeyeq_array)
+#print("key_array перед расшифрованием  \n", key_array) # матрица для вычислений значений уравнения
+
+print("старт расшифрования")
+start = time.time() #змінній start присвоювається значення часу
+decryption(U2_array, V2_array, D_array, K, L, N, T_arrayU, Tau_arrayVW, Wkci_array, key_array)
+
+decryptbetta(K,L,N, D_array,bettaLSprim_array,permbitLS_array,permblockLS_array,bettarandhelpLS_array,inverspolinomkeyLS_array,vkeyLS_array,U_arrayLS,Text1_array) #
+
+end = time.time()
+print('время на затраты расшифрования: ', end-start)
+
+
+
+
+
+
+
+
+
+
+
